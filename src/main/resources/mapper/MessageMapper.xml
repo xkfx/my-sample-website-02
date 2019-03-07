@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.sample.website.dao.MessageMapper">
+    <insert id="saveMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message(nickname, content)
+        VALUES (#{nickname}, #{content})
+    </insert>
+
+    <select id="listMessage" resultType="org.sample.website.entity.Message">
+        SELECT id, nickname, content
+        FROM message
+        ORDER BY id DESC
+        LIMIT #{offset},#{limit}
+    </select>
+</mapper>
