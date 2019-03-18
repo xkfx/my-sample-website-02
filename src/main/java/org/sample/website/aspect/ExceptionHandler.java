@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Aspect
+@Order(1)
 @Configuration
 public class ExceptionHandler {
 
@@ -27,13 +29,6 @@ public class ExceptionHandler {
     public Object handle(ProceedingJoinPoint jp) throws Throwable {
         ResponseEntity<?> result;
         try {
-            // 基于平台不同校验方式也不同
-            // if (需要认证("xx"))
-            // if (getSubject(Http).hasPermissonOf(jp.ges)) {
-            // } else
-            // 从HTTP中解析出JWT来
-            // 用户表、角色表、角色X权限组、权限组X权限、权限
-            //
             result = (ResponseEntity<?>) jp.proceed();
         } catch (Throwable e) {
             Map<String, Object> nodes = new HashMap<>();

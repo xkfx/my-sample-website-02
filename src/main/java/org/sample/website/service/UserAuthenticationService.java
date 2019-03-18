@@ -4,9 +4,9 @@ import org.sample.website.model.User;
 
 public interface UserAuthenticationService {
 
-    User getSubject(String uid, String pwd);
+    String login(String username, String pwd);
 
-    User getSubject(String token);
+    void verifyAndSetCurrentUser(String token);
 
-
+    User getCurrentUser();
 }
