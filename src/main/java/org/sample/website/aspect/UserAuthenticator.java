@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.sample.website.exception.AuthenticationException;
-import org.sample.website.service.UserAuthenticationService;
+import org.sample.website.service.JwtUserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,13 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 @Configuration
 public class UserAuthenticator {
 
-    private final UserAuthenticationService authenticationService;
+    private final JwtUserAuthenticationService jwtUserAuthenticationService;
 
     private static final String BEARER = "Bearer ";
 
     @Autowired
-    public UserAuthenticator(UserAuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public UserAuthenticator(JwtUserAuthenticationService jwtUserAuthenticationService) {
+        this.jwtUserAuthenticationService = jwtUserAuthenticationService;
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {
@@ -47,12 +47,12 @@ public class UserAuthenticator {
     @Around("controllerMethod()")
     public Object authenticate(ProceedingJoinPoint jp) throws Throwable {
         String token = extractTokenFromRequest(getCurrentRequest());
-        System.out.println("token actually: " + token);
+        // TOKEN为空或者验证TOKEN时抛出异常都将直接跳转到ExceptionHandler
         if (token != null) {
-            authenticationService.verifyAndSetCurrentUser(token);
+            jwtUserAuthenticationService.verifyAndSetCurrentUser(token);
             return jp.proceed();
         } else {
-            throw new AuthenticationException("请先登陆");
+            throw new AuthenticationException("尚未登陆");
         }
     }
 }

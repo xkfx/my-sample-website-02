@@ -6,6 +6,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.sample.website.exception.AuthenticationException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,9 @@ public class ExceptionHandler {
         } catch (Throwable e) {
             Map<String, Object> nodes = new HashMap<>();
             if (e instanceof ValidationException) {
+                nodes.put("message", e.getMessage());
+                result = new ResponseEntity<>(nodes, HttpStatus.BAD_REQUEST);
+            } else if (e instanceof AuthenticationException) {
                 nodes.put("message", e.getMessage());
                 result = new ResponseEntity<>(nodes, HttpStatus.BAD_REQUEST);
             } else {

@@ -2,7 +2,9 @@ package org.sample.website.service;
 
 import org.sample.website.model.User;
 
-public interface UserAuthenticationService {
+public interface JwtUserAuthenticationService {
+
+    void register(User user);
 
     String login(String username, String pwd);
 

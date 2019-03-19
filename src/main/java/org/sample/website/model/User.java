@@ -12,6 +12,11 @@ public class User {
     public User() {
     }
 
+    public User(String username, String pwd) {
+        this.username = username;
+        this.pwd = pwd;
+    }
+
     public User(Long id, String username, String pwd) {
         this.id = id;
         this.username = username;

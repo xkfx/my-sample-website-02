@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<h1>用户注册</h1>
+		<p><input type="text" name="username" placeholder="Enter your username ..." /></p>
+		<p><input type="password" name="pwd" placeholder="Enter your password ..." /></p>
+		<p><button name="reg">注册</button></p>
+
+		<script>
+			$(document).ready(() => {
+				let usernameBox = document.querySelector("input[name=username]");
+				let passwordBox = document.querySelector("input[name=pwd]");
+				let btnReg = document.querySelector("button[name=reg]");
+
+				btnReg.addEventListener("click", event => {
+					let settings = {
+						"async": true,
+						"crossDomain": true,
+						"url": "http://localhost:8080/test/api/v1/users",
+						"method": "POST",
+						"headers": {
+							"Content-Type": "application/x-www-form-urlencoded",
+							"cache-control": "no-cache",
+							"Postman-Token": "bfcdd502-3717-423e-a57d-d2e7c877d746"
+						},
+						"data": {
+							"username": usernameBox.value,
+							"pwd": passwordBox.value,
+						},
+					};
+
+					$.ajax(settings).done(response => {
+						console.log(response);
+						if(response.id == null) {
+							alert("用户名已经被注册");
+						} else {
+							if(confirm("注册成功，是否立即登陆？")) {
+								window.location.replace("login.html");
+							}
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

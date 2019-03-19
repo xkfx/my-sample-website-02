@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<h1>检测结果：<span id="output"></span></h1>
+		<p><a href="login.html">登陆</a>&nbsp;<a href="#">注册</a>&nbsp;<a href="logout.html">退出</a></p>
+		<script>
+			let output = document.querySelector("#output");
+			// 优先用当前会话的TOKEN		
+			let token = sessionStorage.getItem("token");
+			if(token == null) {
+				// 如果当前会话没有TOKEN再从本地存储中找
+				token = localStorage.getItem("token");
+			}
+			let settings = {
+				"async": true,
+				"crossDomain": true,
+				"url": "http://localhost:8080/test/api/v1/users",
+				"method": "GET",
+				"headers": {
+					"Authorization": token == null ? "" : `Bearer ${token}`,
+					"cache-control": "no-cache",
+					"Postman-Token": "8112324e-ad3f-4d05-9450-1f276eb851f6"
+				}
+			}
+
+			$.ajax(settings).done(response => {
+				console.log("response:\n", response);
+				output.innerHTML = "用户" + response.username + "已登陆";
+			}).fail(e => {
+				console.log("e:\n", e);
+				output.innerHTML = e.responseJSON.message;
+			});
+		</script>
+	</body>
+
+</html>
