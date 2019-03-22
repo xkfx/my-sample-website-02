@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.sample.website.dao.CartItemMapper">
+    <select id="listCartItem" resultType="org.sample.website.model.CartItemModel">
+        SELECT a.id, user_id, item_id, a.quantity, b.name AS item_name
+        FROM cart_item a
+        LEFT JOIN item b
+        ON a.item_id=b.id
+        WHERE user_id=#{user_id}
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="getCartBill" resultType="java.lang.Double">
+        SELECT SUM(a.quantity*b.price)
+        FROM cart_item a
+        LEFT JOIN item b
+        ON a.item_id=b.id
+        WHERE user_id=#{user_id}
+    </select>
+
+    <select id="getCartItem" resultType="org.sample.website.entity.CartItemDO">
+        SELECT id, user_id, item_id, quantity
+        FROM cart_item
+        WHERE user_id=#{user_id}
+        AND item_id=#{item_id}
+    </select>
+
+    <insert id="saveCartItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cart_item(user_id, item_id, quantity)
+        VALUES (#{user_id}, #{item_id}, #{quantity})
+    </insert>
+
+    <delete id="removeCartItem">
+        DELETE FROM cart_item
+        WHERE id=#{id}
+    </delete>
+
+    <update id="updateCartItem">
+        UPDATE cart_item
+        SET quantity=#{num}
+        WHERE id=#{cartItem_id}
+    </update>
+</mapper>

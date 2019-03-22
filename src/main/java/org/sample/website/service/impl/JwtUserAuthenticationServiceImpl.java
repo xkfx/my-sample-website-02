@@ -68,6 +68,6 @@ public class JwtUserAuthenticationServiceImpl implements JwtUserAuthenticationSe
 
     @Override
     public User getCurrentUser() {
-        return userThreadLocal.get(); // 可能为空
+        return userThreadLocal.get(); // 没经过校验的话，可能为空
     }
 }
