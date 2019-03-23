@@ -50,7 +50,9 @@ public class UserAuthenticator {
         // TOKEN为空或者验证TOKEN时抛出异常都将直接跳转到ExceptionHandler
         if (token != null) {
             jwtUserAuthenticationService.verifyAndSetCurrentUser(token);
-            return jp.proceed();
+            Object obj = jp.proceed();
+            jwtUserAuthenticationService.removeCurrentUser(); // 其实放在这里不太合适，后期考虑将多个切面合并起来。
+            return obj;
         } else {
             throw new AuthenticationException("尚未登陆");
         }

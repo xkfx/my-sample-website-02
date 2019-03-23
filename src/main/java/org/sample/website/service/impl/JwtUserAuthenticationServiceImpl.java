@@ -70,4 +70,15 @@ public class JwtUserAuthenticationServiceImpl implements JwtUserAuthenticationSe
     public User getCurrentUser() {
         return userThreadLocal.get(); // 没经过校验的话，可能为空
     }
+
+    /**
+     * 必须要手动调用，否则线程重用会出现
+     * 不好的结果，例如获取到别人的用户信息。
+     *
+     * @return
+     */
+    @Override
+    public void removeCurrentUser() {
+        userThreadLocal.remove();
+    }
 }

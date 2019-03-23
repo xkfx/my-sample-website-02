@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+		<style>
+			header {
+				margin-top: 20px;
+				margin-bottom: 20px;
+			}
+			
+			h1 {
+				width: 200px;
+				margin: 0px auto;
+			}
+			
+			main.flex-container {
+				/*对子元素开启弹性布局*/
+				display: flex;
+				/*弹性元素在必要的时候换行*/
+				flex-wrap: wrap;
+				/*将弹性元素居中*/
+				justify-content: center;
+			}
+			
+			div.item {
+				margin: 3px;
+				width: 250px;
+				height: 120px;
+				background-color: #f6f6f6;
+				border-radius: 15px;
+				padding: 20px;
+				/* 以便子元素相对父元素进行绝对定位*/
+				position: relative;
+			}
+			
+			button.item-add {
+				margin: 10px;
+				position: absolute;
+				right: 0px;
+				bottom: 0px;
+			}
+			
+			.a-cart {
+				float: right;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<a class="a-cart" href="">我的购物车</a>
+			<h1>图书销售平台</h1>
+		</header>
+
+		<main class="flex-container">
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+			<div class="item">
+				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
+				<br />余量：<span class="item-stocks">23</span>
+				<br /><button class="item-add">加入购物车</button>
+			</div>
+		</main>
+
+		<script>
+			$(document).ready(() => {
+				let item_name = document.querySelectorAll("span.item-name");
+				let item_price = document.querySelectorAll("span.item-price");
+				let item_stocks = document.querySelectorAll("span.item-stocks");
+				let item_add = document.querySelectorAll("span.item-add");
+
+				let ipg = {
+					reloadDom: function() {
+						let settings = {
+							"async": true,
+							"crossDomain": true,
+							"url": "http://localhost:8080/test/api/v1/items?offset=0&limit=12",
+							"method": "GET",
+							"headers": {
+								"cache-control": "no-cache",
+								"Postman-Token": "a4447b34-b968-4478-a4fe-c842bd8a00d6"
+							}
+						}
+
+						$.ajax(settings).done(items => {
+							console.log(items);
+							for(let i = 0; i != items.length; ++i) {
+								item_name[i].innerText = items[i].name;
+								item_price[i].innerText = items[i].price;
+								item_stocks[i].innerText = items[i].quantity;
+								//					item_add[i].innerText = items[i].stocks;
+							}
+						});
+					},
+				};
+				
+				ipg.reloadDom();
+			});
+		</script>
+	</body>
+
+</html>

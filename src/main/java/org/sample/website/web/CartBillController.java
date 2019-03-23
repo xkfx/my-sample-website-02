@@ -22,6 +22,7 @@ public class CartBillController {
         this.cartItemService = cartItemService;
     }
 
+    @Authentication
     @GetMapping
     public ResponseEntity<?> getCartBill(Long uid) {
         return new ResponseEntity<>(cartItemService.getBill(uid), HttpStatus.OK);

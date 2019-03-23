@@ -23,6 +23,7 @@ CREATE TABLE item (
 	quantity DECIMAL(6, 0) NOT NULL, -- 数量上限999999
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
+ALTER TABLE item modify COLUMN name VARCHAR(255) NOT NULL;
 
 -- cart_item
 CREATE TABLE cart_item (
@@ -47,6 +48,40 @@ INSERT INTO item(name, price, quantity)
 VALUES
   ("test_item01", 12.5, 9999),
   ("test_item02", 33, 998);
+
+-- books
+INSERT INTO item(name, price, quantity)
+VALUES
+  ("大型分布式网站架构设计与实践", 79.00, 10),
+  ("大型网站技术架构", 59.00, 66),
+  ("图解HTTP", 49.00, 20),
+  ("Java Concurrency in Practice", 59.00, 2),
+  ("Compilers: Principles, Techniques, and Tools", 173.98, 5),
+  ("百年孤独", 55.5,5),
+  ("岛上书店", 25.5, 5),
+  ("高性能Mysql", 99.8, 10),
+  ("唐诗鉴赏辞典", 77.4, 255),
+  ("纳兰词", 21.8,33),
+  ("大型分布式网站架构设计与实践Ⅱ", 79.00, 10),
+  ("大型网站技术架构Ⅱ", 59.00, 66),
+  ("图解HTTPⅡ", 49.00, 20),
+  ("Java Concurrency in PracticeⅡ", 59.00, 2),
+  ("Compilers: Principles, Techniques, and ToolsⅡ", 173.98, 5),
+  ("百年孤独Ⅱ", 55.5,5),
+  ("岛上书店Ⅱ", 25.5, 5),
+  ("高性能MysqlⅡ", 99.8, 10),
+  ("唐诗鉴赏辞典Ⅱ", 77.4, 255),
+  ("纳兰词Ⅱ", 21.8,33),
+  ("大型分布式网站架构设计与实践Ⅲ", 79.00, 10),
+  ("大型网站技术架构Ⅲ", 59.00, 66),
+  ("图解HTTPⅢ", 49.00, 20),
+  ("Java Concurrency in PracticeⅢ", 59.00, 2),
+  ("Compilers: Principles, Techniques, and ToolsⅢ", 173.98, 5),
+  ("百年孤独Ⅲ", 55.5,5),
+  ("岛上书店Ⅲ", 25.5, 5),
+  ("高性能MysqlⅢ", 99.8, 10),
+  ("唐诗鉴赏辞典Ⅲ", 77.4, 255),
+  ("纳兰词Ⅲ", 21.8,33);
 
 INSERT INTO cart_item(user_id, item_id, quantity)
 VALUES

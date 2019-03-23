@@ -30,7 +30,8 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public List<CartItemModel> listCartItem(Long uid) {
         User user = jwtUserAuthenticationService.getCurrentUser();
-        // user会随机为null和一个刚刚登陆过的用户值是什么问题？？？？？？？
+        // 忘记写需要认证了，user会随机为null或者一个刚刚登陆过的用户值是什么问题？？？？？？？
+        // 估计是线程重用的原因，因此ThreadLocal一定要手动remove掉
         if (user != null && Objects.equals(user.getId(), uid)) {
             return cartItemMapper.listCartItem(uid);
         } else {
