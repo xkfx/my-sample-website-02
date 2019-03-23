@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+		<script src="custom.js"></script>
+	</head>
+
+	<body>
+		<h1>用户登陆</h1>
+		<p><input type="text" name="username" placeholder="Enter your username ..." /></p>
+		<p><input type="password" name="pwd" placeholder="Enter your password ..." /></p>
+		<p>记住密码<input type="checkbox" name="remember" /></p>
+		<p><button name="login">登陆</button></p>
+		<script>
+			$(document).ready(() => {
+				let usernameBox = document.querySelector("input[name=username]");
+				let passwordBox = document.querySelector("input[name=pwd]");
+				let rememberCheckbox = document.querySelector("input[name=remember]");
+				let btnLogin = document.querySelector("button[name=login]");
+
+				let back = getParamFromUrl("back");
+				console.log(back);
+				
+				btnLogin.addEventListener("click", event => {
+					let username = usernameBox.value;
+					let pwd = passwordBox.value;
+					let remember = rememberCheckbox.checked;
+					let settings = {
+						"async": true,
+						"crossDomain": true,
+						"url": `http://localhost:8080/test/api/v1/tokens?username=${username}&pwd=${pwd}`,
+						"method": "GET",
+						"headers": {
+							"cache-control": "no-cache",
+							"Postman-Token": "57473bb5-7b03-4a9c-bb6b-5412976aea09"
+						}
+					}
+
+					$.ajax(settings).done(response => {
+						console.log(response);
+						sessionStorage.setItem("token", response.token);
+						if (rememberCheckbox.checked) {
+							localStorage.setItem("token", response.token);
+						}
+						if (back != undefined) {
+							window.location.replace(back);
+							return;
+						}
+						if(confirm("登陆成功，是否跳转到检测界面？")) {
+							window.location.replace("ping.html");
+						}						
+					}).fail(e => {
+						console.log(e);
+						alert(e.responseJSON.message);
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

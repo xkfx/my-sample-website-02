@@ -5,7 +5,8 @@
 		<meta charset="UTF-8">
 		<title></title>
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-		<style>
+		<script src="custom.js"></script>
+		<style type="text/css">
 			header {
 				margin-top: 20px;
 				margin-bottom: 20px;
@@ -43,15 +44,19 @@
 				bottom: 0px;
 			}
 			
-			.a-cart {
+			#my_cart {
 				float: right;
+			}
+			
+			#next_page {
+				background-color: aqua;
 			}
 		</style>
 	</head>
 
 	<body>
 		<header>
-			<a class="a-cart" href="">我的购物车</a>
+			<a id="my_cart" href="cart.html">我的购物车</a>
 			<h1>图书销售平台</h1>
 		</header>
 
@@ -111,11 +116,7 @@
 				<br />余量：<span class="item-stocks">23</span>
 				<br /><button class="item-add">加入购物车</button>
 			</div>
-			<div class="item">
-				<span class="item-name">肥皂</span>(￥<span class="item-price">23.5</span>)
-				<br />余量：<span class="item-stocks">23</span>
-				<br /><button class="item-add">加入购物车</button>
-			</div>
+			<div class="item" id="next_page">下一页</div>
 		</main>
 
 		<script>
@@ -123,61 +124,86 @@
 				let item_name = document.querySelectorAll("span.item-name");
 				let item_price = document.querySelectorAll("span.item-price");
 				let item_stocks = document.querySelectorAll("span.item-stocks");
-				let item_add = document.querySelectorAll("span.item-add");
+				let item_add = document.querySelectorAll("button.item-add");
+
+				let currentOffset = 0;
+				let gl_items = null;
+				let user = null;
+				let tk = null;
 
 				let ipg = {
-					ping: function() {
-						// 优先用当前会话的TOKEN		
-						let token = sessionStorage.getItem("token");
-						if(token == null) {
-							// 如果当前会话没有TOKEN再从本地存储中找
-							token = localStorage.getItem("token");
+					init: function() {
+						// 加载页面
+						ipg.reloadDom(currentOffset, 11);
+						// 检测登陆
+						tk = tokenKeeper.getToken();
+						if(tk != null) {
+							rpc.getUser(tk).then(u => {
+								user = u;
+							}).catch(e => {
+								// 最好统一定义一个异常处理器
+								console.log(e);
+								alert("用户状态异常，请查看控制台");
+							});
+						} else {
+							alert("你还没有登陆哦~");
 						}
-						let settings = {
-							"async": true,
-							"crossDomain": true,
-							"url": "http://localhost:8080/test/api/v1/users",
-							"method": "GET",
-							"headers": {
-								"Authorization": token == null ? "" : `Bearer ${token}`,
-								"cache-control": "no-cache",
-								"Postman-Token": "8112324e-ad3f-4d05-9450-1f276eb851f6"
-							}
-						}
-
-						$.ajax(settings).done(response => {
-							console.log("response:\n", response);
-						}).fail(e => {
-							console.log("e:\n", e);
-							window.location.replace("../login.html");
-						});
+						// 读取跳转参数
 					},
-					reloadDom: function() {
-						let settings = {
-							"async": true,
-							"crossDomain": true,
-							"url": "http://localhost:8080/test/api/v1/items?offset=0&limit=12",
-							"method": "GET",
-							"headers": {
-								"cache-control": "no-cache",
-								"Postman-Token": "a4447b34-b968-4478-a4fe-c842bd8a00d6"
-							}
-						}
-
-						$.ajax(settings).done(items => {
+					reloadDom: function(offset, limit) {
+						return rpc.listItem(offset, limit).then(items => {
 							console.log(items);
+							if (items.length == 0) return [];
 							for(let i = 0; i != items.length; ++i) {
 								item_name[i].innerText = items[i].name;
 								item_price[i].innerText = items[i].price;
 								item_stocks[i].innerText = items[i].quantity;
-								//					item_add[i].innerText = items[i].stocks;
 							}
+							gl_items = items; // 将item临时存储到内存里
+							if (items.length < 11) {
+								for (let i = items.length; i != 11; ++i) {
+									item_name[i].innerText = "空空如也";
+									item_price[i].innerText = "一亿";
+									item_stocks[i].innerText = "无数";									
+								}
+							}
+							return items; // 传递给下一个then
 						});
+					},
+					showNextPage: function() {
+						currentOffset += 11;
+						ipg.reloadDom(currentOffset, 11).then(items => {
+							if(items.length === 0) alert("已经没有内容了！");
+						});
+					},
+					addCartItem: function(no) {
+						console.log(gl_items[no].id);
+						// 首先判断有没登陆									
+						if(user != null) {
+							// 已登陆 -> 调rpc方法
+							rpc.addCartItem(user.id, gl_items[no].id, 1, tk).then(cartItem => {
+								console.log(cartItem);
+								alert("添加商品【" + gl_items[no].name + "】成功");
+							}).catch(e => {
+								console.log(e);
+							})
+						} else {
+							// 没登陆 -> 滚去登陆
+							if(confirm("你尚未登陆，是否立即登陆？")) {
+								window.location.replace("login.html?back=books.html");
+							}
+						};
 					},
 				};
 
-				ipg.ping();
-				ipg.reloadDom();
+				ipg.init();
+
+				addRel("#next_page", "click", ipg.showNextPage);
+				for(let i = 0; i != item_add.length; ++i) {
+					addRel(item_add[i], "click", event => {
+						ipg.addCartItem(i);
+					});
+				}
 			});
 		</script>
 	</body>

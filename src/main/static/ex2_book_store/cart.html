@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+		<script src="custom.js"></script>
+		<style type="text/css">
+			header {
+				margin-top: 20px;
+				margin-bottom: 20px;
+			}
+			
+			h1 {
+				width: 200px;
+				margin: 0px auto;
+			}
+			
+			main.flex-container {
+				/*对子元素开启弹性布局*/
+				display: flex;
+				/*弹性元素在必要的时候换行*/
+				flex-wrap: wrap;
+				/*将弹性元素居中*/
+				justify-content: center;
+			}
+			
+			div.item {
+				margin: 3px;
+				width: 250px;
+				height: 120px;
+				background-color: #f6f6f6;
+				border-radius: 15px;
+				padding: 20px;
+				/* 以便子元素相对父元素进行绝对定位*/
+				position: relative;
+			}
+			
+			div.ops {
+				margin: 10px;
+				position: absolute;
+				right: 0px;
+				bottom: 0px;
+			}
+			
+			#home_page {
+				float: right;
+			}
+			
+			#get_bill {
+				background-color: aqua;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<a id="home_page" href="books.html">商城首页</a>
+			<h1>我的购物车</h1>
+		</header>
+
+		<main class="flex-container">
+			<!--<div class="item">
+				<span class="item-name">测试数据</span>
+				<br />购买数量：<span class="item-stocks">无数</span>
+				<div class="ops">
+					<button class="item-add">增</button>
+					<button class="item-min">减</button>
+				</div>				
+			</div>-->
+			<!--<div class="item" id="get_bill">结算</div>-->
+		</main>
+
+		<script type="text/javascript">
+			$(document).ready(() => {
+				function citems2divs(citems) {
+					return citems.map(citem => {
+						return elt("div", {
+							class: "item",
+						}, elt("span", {
+							class: "item-name",
+						}, citem.item_name), elt("br", {}), elt("span", {
+
+						}, "购买数量："), elt("span", {
+							class: "item-stocks",
+						}, citem.quantity), elt("div", {
+							class: "ops",
+						}, elt("button", {
+							class: "item-add",
+						}, "增"), elt("button", {
+							class: "item-min"
+						}, "减")));
+					});
+				}
+
+				// ui部件
+				let item_box = qE(".flex-container");
+				let btn_get_bill = elt("div", {
+					class: "item",
+					id: "get_bill",
+				}, "结算");
+				// 全局变量
+				let user = null;
+				let tk = null;
+
+				let ipg = {
+					init: function() {
+						// 检查有没登陆
+						// 没登陆？ => 滚去登陆
+						// 已经登陆 => 加载DOM
+						tk = tokenKeeper.getToken();
+						if(tk != null) {
+							rpc.getUser(tk).then(u => {
+								user = u;
+								ipg.reloadDom();
+							}).catch(e => {
+								// 最好统一定义一个异常处理器
+								console.log(e);
+								alert("用户状态异常，请查看控制台");
+							});
+						} else {
+							if(confirm("你尚未登陆，是否立即登陆？")) {
+								window.location.replace("login.html?back=cart.html");
+							}
+						}
+					},
+					reloadDom: function() {
+						qE("h1").innerText = user.username + "的购物车";
+						rpc.listCartItem(user.id, tk).then(citems => {
+							console.log(citems);
+							let citems_dom = citems2divs(citems);
+							// 动态添加UI
+							for(let i = 0; i != citems_dom.length; ++i) {
+								item_box.appendChild(citems_dom[i]);
+							}
+							item_box.appendChild(btn_get_bill);
+							addRel(btn_get_bill, "click", () => {
+								rpc.getCartBill(user.id, tk).then(bill => {
+									alert("总金额为￥" + bill);
+								}).catch(e => {
+									console.log(e)
+									alert("出错了，快到控制台看看！");
+								});
+							});
+							// 动态添加事件监听
+							let btnAdds = item_box.getElementsByClassName("item-add");
+							let btnMins = item_box.getElementsByClassName("item-min");
+							let item_num = item_box.getElementsByClassName("item-stocks");
+							for(let i = 0; i != citems_dom.length; ++i) {
+								addRel(btnAdds[i], "click", (event) => {
+									// console.log(event)
+									rpc.addCartItem(user.id, citems[i].item_id, 1, tk).then(cartItem => {
+										console.log(cartItem);
+										alert("添加商品【" + citems[i].item_name + "】成功");
+										item_num[i].innerText = Number(item_num[i].innerText) + 1 + "";
+									}).catch(e => {
+										console.log(e);
+										alert("出错了，请查看控制台");
+									});
+								});
+								addRel(btnMins[i], "click", (event) => {
+									//	console.log(event)
+									rpc.removeCartItem(user.id, citems[i].item_id, 1, tk).then(cartItem => {
+										console.log(cartItem);
+										let temp_num = Number(item_num[i].innerText);
+										if(temp_num == 0) {
+											alert("不能再减了！")
+											// citems_dom[i].remove();这个操作需要固定序号，DOM数组会动态变化。
+										} else {
+											alert("删除商品【" + citems[i].item_name + "】成功");
+											item_num[i].innerText = temp_num - 1 + "";
+										}
+									}).catch(e => {
+										console.log(e);
+										alert("出错了，请查看控制台");
+									});
+								});
+							}
+						});
+					},
+				};
+
+				ipg.init();
+			});
+		</script>
+	</body>
+
+</html>
