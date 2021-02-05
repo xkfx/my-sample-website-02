@@ -1,6 +1,7 @@
 CREATE DATABASE sample_website;
 USE sample_website;
 
+-- 该表可忽略。。。
 CREATE TABLE message (
   id BIGINT NOT NULL AUTO_INCREMENT,
   nickname VARCHAR(20) NOT NULL,
@@ -36,7 +37,7 @@ CREATE TABLE cart_item (
   FOREIGN KEY(user_id) REFERENCES user(id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
-SET NAMES gbk;
+SET NAMES gbk; -- 便于 windows cmd 插入中文
 INSERT INTO message(nickname, content)
 VALUES
   ("李白", "床前明月光"),
@@ -87,3 +88,5 @@ INSERT INTO cart_item(user_id, item_id, quantity)
 VALUES
   (1000, 1000, 12),
   (1000, 1001, 2);
+
+

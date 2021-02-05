@@ -29,6 +29,7 @@ public class UserMapperTest {
     @Test
     public void getUser() throws Exception {
         assertNotNull(userMapper.getUser("123", "123"));
+        assertNull(userMapper.getUser("x3x2x", "123"));
     }
 
     @Test
